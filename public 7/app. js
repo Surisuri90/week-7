@@ -1,17 +1,16 @@
-window.addEventListener('load',() => {
-    document.getElementById('sign-up-button').addEventListener('click', () => {
-        let addName = document.getElementById('username').value;
-        let addPword = document.getElementById('password').value;
+window.addEventListener('load',()=> {
+    document.getElementById('button-cotton').addEventListener('click', ()=> {
+        let noCups = document.getElementById('number-cotton').value;
+        console.log(noCups);
 
-        let obj = {
-            "user" : addName,
-            "pword" : addPword
-        };
-        console.log(obj);
+        //creating the object 
+        let obj = {"number" : noCups};
 
+        //stringify the object
         let jsonData = JSON.stringify(obj);
 
-        fetch('/addUser', {
+        //fetch to route noCups
+        fetch('/noCups', {
             method: 'POST',
             headers: {
                 "Content-type": "application/json"
@@ -19,41 +18,23 @@ window.addEventListener('load',() => {
             body: jsonData
         })
         .then(response => response.json())
-        .then(data => {console.log(data)})
+        .then(data => {console.log(data)});
+
+        //1. make a fetch request of type POST so that we can send the (noCups) info to the server
     })
 
-    document.getElementById('user-info').addEventListener('click', () => {
-        fetch('/userInfo')
-        .then(resp => resp.json())
+    document.getElementById('get-tracker').addEventListener('click', ()=> {
+        //get info on ALL the coffees we've had so far
+        fetch('/getCups')
+        .then(resp=> resp.json())
         .then(data => {
+            document.getElementById('cotton-info').innerHTML = '';
             console.log(data.data);
-            for(let i = 0; i < data.data.length; i++){
-                let string = "username: " + data.data[i].username + "<br>password: " + data.data[i].password;
+            for(let i=0;i<data.data.length;i++) {
+                let string = data.data[i].date + " : " + data.data[i].coffee;
                 let elt = document.createElement('p');
                 elt.innerHTML = string;
-                document.getElementById('all-users').appendChild(elt);
-            }
-        })
-    })
-
-    document.getElementById('log-in-button').addEventListener('click', () => {
-        let logName = document.getElementById('log-name').value;
-        let logPword = document.getElementById('log-pword').value;
-        let informtext = document.getElementById('log-result');
-        fetch('/userInfo')
-        .then(resp => resp.json())
-        .then(data => {
-            console.log(data.data);
-            for(let i = 0; i < data.data.length; i++){
-                if (logName == data.data[i].username){
-                    if (logPword == data.data[i].password){
-                        informtext.innerHTML = "success";
-                    } else {
-                        informtext.innerHTML = "failed";
-                    }
-                } else {
-                    informtext.innerHTML = "user not found";
-                }
+                document.getElementById('cotton-info').appendChild(elt);
             }
         })
     })
