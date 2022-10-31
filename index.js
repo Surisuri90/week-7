@@ -1,38 +1,51 @@
 let express = require('express');
 let app = express();
 
-
-// to parse JSON
 app.use(express.json());
 
-let CottonTracker = [];
+let Datastore = require('nedb');
+let db = new Datastore('userinfo.db');
 
-// app.get('/', (req,res)=> {
-//     res.send('this is the main page');
-// })
+db.loadDatabase();
 
+let userData = [];
 
-//2. add a route on server, that is listening for a post request
-
-app.post('/noCups', (req, res)=> {
+app.post('/addUser', (req, res) => {
     console.log(req.body);
-    let currentDate = Date();
+
     let obj = {
-        date: currentDate,
-        coffee: req.body.number
+        username: req.body.user,
+        password: req.body.pword
     }
-    coffeeTracker.push(obj);
-    console.log(coffeeTracker);
-    res.json({task:"success"});
+
+    db.insert(obj, (err, newDocs) => {
+        if (err){
+            res.json({task: "failed"});
+        } else {
+            res.json({task: "success"});
+        }
+        
+    })
+    //userData.push(obj);
+    //console.log(userData);
 })
 
 app.use('/', express.static('public'));
-app.listen(5000, ()=> {
-    console.log('listening at localhost:5000');
-})
 
-//add route to get all coffee track information
-app.get('/getCups', (req,res)=> {
-    let obj = {data: coffeeTracker};
-    res.json(obj);
+app.get('/userInfo', (req, res) => {
+    db.find({}, (err, docs) =>{
+        if (err){
+            res.json({task: "task failed"});
+        } else {
+            let obj = {data: docs};
+            res.json(obj);
+        }  
+    })
+
+    
+}) 
+
+let port = process.env.PORT || 3000;
+app.listen(3000, ()=> {
+    console.log('listening at localhost:3000');
 })
